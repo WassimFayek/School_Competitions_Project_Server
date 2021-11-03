@@ -15,6 +15,7 @@ class player extends Model
         'gender',
         'class',
         'age',
+        'file',
         'school_id',
         'team_id',
     ];

@@ -18,4 +18,5 @@ class game extends Model
     {
         return $this->hasOne(result::class);
     }
+   
 }

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\VisitorsController;
 use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\Mail;
 
@@ -22,7 +23,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
+Route::get('show_players', [VisitorsController::class, 'show_players']);
+Route::get('show_teams', [VisitorsController::class, 'show_teams']);
 
 Route::group([
    'middleware' => 'api',
@@ -45,6 +47,15 @@ Route::group([
     Route::post('create_competitions', [AuthController::class, 'create_competition']);
     Route::post('set_result', [AuthController::class, 'set_results']);
     Route::get('show_result', [AuthController::class, 'show_results']);
+    Route::get('show_school', [AuthController::class, 'show_schools']);
+    Route::get('show_competitions', [AuthController::class, 'show_competitions']);
+    Route::get('get_enroll_comp', [AuthController::class, 'getPending_Comp']);
+    Route::get('show_games', [AuthController::class, 'show_games']);
+    
+    Route::post('enroll_comp', [AuthController::class, 'enroll_in_competition']);
 });
+
+
+
 
 
