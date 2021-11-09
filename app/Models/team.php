@@ -33,7 +33,7 @@ class team extends Model
 
     public function games()
     {
-    return $this->belongsToMany(team::class,'games','team_one_id','team_two_id');
+    return $this->belongsToMany(games::class,'games','team_one_id','team_two_id');
     }
 
     public function users()

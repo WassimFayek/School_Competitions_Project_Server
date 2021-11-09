@@ -80,7 +80,7 @@ class AuthController extends Controller
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
-            'file' => 'required',
+            //'file' => 'required',
            
         ]);
 
@@ -123,7 +123,7 @@ class AuthController extends Controller
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
-            'file' => 'required',
+           // 'file' => 'required',
            
         ]);
 
@@ -364,7 +364,9 @@ class AuthController extends Controller
         $school = school::find($request->id);
         $school->is_approved = 1;
         $school->save();
-        return response()->json($school);
+        return response()->json([
+            'status' => true,
+            'school' =>$school]);
         }
     }
 
@@ -379,7 +381,9 @@ class AuthController extends Controller
         {
         $school = school::where('id', $request->id)
                      ->delete();
-         return response()->json("This record successfully deleted");
+         return response()->json([
+            'status' => true, 
+            'message' => "This record successfully deleted"]);
         }
     }
 
@@ -425,8 +429,8 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name'=> 'required|string|between:2,200',
             'description' => 'required|string|between:2,200',
-            'start_date' => 'required|after:today',
-            'end_date'=> 'required|after:today',
+            'start_date' => 'required',
+            'end_date'=> 'required',
         ]);
 
         if ($validator->fails()) {
@@ -456,6 +460,20 @@ class AuthController extends Controller
     }
     public function set_results(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'id'=> 'required|numeric',
+            'score' => 'required|numeric',
+            'winner_id' => 'required|numeric',
+            
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(array(
+                "status" => false,
+                "errors" => $validator->errors()
+            ), 400);
+        }
         $results = new result;
         $results->game_id = $request->id;
         $results->score = $request->score;
@@ -501,13 +519,18 @@ class AuthController extends Controller
 
     public function show_competitions()
     {
-        $competition = DB:: table('competitions')->get();
+        $user= auth()->user();
+        $school_id = $user->school_id;
+        $enroll = enroll_competition::where('school_id', $school_id)->pluck('competition_id');
+       // $competition = DB:: table('competitions')->get();
+       $competition = competition::whereNotIn('id', $enroll)->get();
         return response()->json($competition);
         
     }
 
     public function enroll_in_competition(Request $request)
     {
+        
         $validator = Validator::make($request->all(), [
             'school_id'=> 'required|integer',
            'competition_id' => 'required|integer',
@@ -533,10 +556,9 @@ class AuthController extends Controller
             'school' => $newEnroll
         ], 201);
 
-
+        
 
     }
-
 
     public function getPending_Comp()
     {
@@ -559,7 +581,14 @@ class AuthController extends Controller
 
     public function show_games()
     {
+        //->join('teams','teams.id', '=','games.team_one_id')
+        // ->join('teams','teams.id','=','games.team_two_id')
+        //$game = game::select('*')->join('teams','teams.id', '=','games.team_one_id')
+                                  
+                                // ->get();
         
+        //$game =  DB:: table('games')->teams->first();
+        //return response()->json($game);
         $games = DB:: table('games')->get();
         $team_one_obj = [];
         $team_one_obj1 = [];
@@ -581,6 +610,8 @@ class AuthController extends Controller
          return response()->json(["team_one" => $team_one_obj,
                                 "team_two" => $team_one_obj1,
                                 "game_id" => $game_id]);
+
+
         // $games = game ::all()->values();
         // $i=0;
         // foreach($games as $game){
@@ -595,6 +626,21 @@ class AuthController extends Controller
         // }
         
         // return response()->json([$team_name1,$team_name2]);
+    }
+    public function show_school_players()
+    {
+        $userId = auth()->user();
+        $user_school_id = $userId->school_id;
+        $players = player::where('school_id',$user_school_id)->get();
+        return response()->json($players);
+    }
+
+    public function show_school_teams()
+    {
+        $userId = auth()->user();
+        $user_school_id = $userId->school_id;
+        $teams = team::where('school_id',$user_school_id)->get();
+        return response()->json($teams);
     }
 
   

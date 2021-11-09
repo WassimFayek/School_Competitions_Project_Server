@@ -25,6 +25,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('show_players', [VisitorsController::class, 'show_players']);
 Route::get('show_teams', [VisitorsController::class, 'show_teams']);
+Route::get('show_popular_players', [VisitorsController::class, 'show_popular_players']);
+Route::get('latest_match', [VisitorsController::class, 'latest_results']);
+Route::get('next_matche', [VisitorsController::class, 'get_next_matche']);
+Route::get('show_all_games', [VisitorsController::class, 'show_all_games']);
 
 Route::group([
    'middleware' => 'api',
@@ -51,7 +55,8 @@ Route::group([
     Route::get('show_competitions', [AuthController::class, 'show_competitions']);
     Route::get('get_enroll_comp', [AuthController::class, 'getPending_Comp']);
     Route::get('show_games', [AuthController::class, 'show_games']);
-    
+    Route::get('show_school_teams', [AuthController::class, 'show_school_teams']);
+    Route::get('show_school_players', [AuthController::class, 'show_school_players']);
     Route::post('enroll_comp', [AuthController::class, 'enroll_in_competition']);
 });
 

@@ -18,5 +18,10 @@ class game extends Model
     {
         return $this->hasOne(result::class);
     }
+    public function teams()
+    {
+        //return("hello");
+        return $this->hasMany(team::class,'id','id');
+    }
    
 }
