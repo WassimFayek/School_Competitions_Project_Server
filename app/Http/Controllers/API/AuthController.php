@@ -242,8 +242,6 @@ class AuthController extends Controller
 
     public function Add_players(Request $request)
     {
-        //$file = $request->file;
-        //return response()->json($file);
         $coach = auth()->user();
         $coach_team = User::find($coach->id)->teams;
         $team_id = $coach_team->pluck('id')->toArray();
@@ -254,7 +252,7 @@ class AuthController extends Controller
             'gender' => 'required|string|max:10',
             'class' => 'required|string|max:50',
             'date_of_birth' => 'required', 
-            //'image' => 'required', 
+            'image' => 'required', 
         ]);
         
 
@@ -264,43 +262,19 @@ class AuthController extends Controller
                 "errors" => $validator->errors()
             ), 400);
         }
-        /** \File::put($path. '/image/' . $imageName, base64_decode($image));
- */   //$path=public_path();
-
-             
-            //store file into document folder
-        //$request->file->store('public');
-        //$request->file->move(public_path('image'), $request->file);
-        
-        // $path=public_path();
-        //$file = str_replace('data:image/png;base64,', '', $file);
-        //$file = str_replace(' ', '+', $file);
-       // $imageName =  Str::random(10).'.'.'png';
-       // File::put($path. '/image/' . $imageName, base64_decode($file));
         
          $path=public_path();
-         $image = $request->file;  // your base64 encoded
-        //return response()->json($image);
-        // $image = str_replace('data:image/png;base64,', '', $image);
-         //$image = str_replace(' ', '+', $image);
-        // $imageName = Str::random(40) . '.png';
-       // $name = time().'.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[0])[0];
-      
-        //\Image::make($image)->save(public_path().$name);
-        //$request->merge(['photo' => $name]);
-      
-        
-        File::put($path. '/image/ ' . $image, base64_decode($image));
-         //Storage::disk('local')->put($name, base64_decode($image));
-  
-       
+         $imageName =  Str::random(10).'.'.'png';
+         $image = base64_encode(file_get_contents($request->file('image'))); 
+          
+         File::put($path. '/image/' .$imageName, base64_decode($image));
         $player = new player;
         $player->first_name = $request->first_name;
         $player->last_name = $request->last_name;
         $player->gender = $request->gender;
         $player->class = $request->class;
         $player->age = $request->date_of_birth;
-        $player->file =  $image;
+        $player->file =  $imageName;
         //$player->file = $image;
         $player->school_id = $coach->school_id;
         $player->team_id = $team_id_string;
