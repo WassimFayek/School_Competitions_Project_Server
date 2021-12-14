@@ -18,9 +18,6 @@ use File;
 use Illuminate\Support\Str;
 use Storage;
 
-
-
-
 use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\Mail;
 
@@ -59,12 +56,6 @@ class AuthController extends Controller
         return $this->createNewToken($token);
     }
 
-    /**
-     * Register a User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-
     public function sendEmail(Request $request){
         $email = $request->email;
         Mail::to($email)->send(new WelcomeMail());  
@@ -74,13 +65,18 @@ class AuthController extends Controller
         ],201);
     }
 
+    /**
+     * Register a User.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
-            //'file' => 'required',
+        
            
         ]);
 
@@ -110,20 +106,16 @@ class AuthController extends Controller
 
     public function register_coach(Request $request)
     {
-        $coordinator = auth()->user();//->schools;
-        //return("schools are " .$coordinator);
-
+        $coordinator = auth()->user();
         $logged_user = $coordinator->role;
         if($logged_user != 2 ){
             return response()->json(["message"=>"your not allowed to add coach"],201);
         }
         else{
-        //return("logger user :" .$logged_user);
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
-           // 'file' => 'required',
            
         ]);
 
@@ -228,7 +220,6 @@ class AuthController extends Controller
         $team->school_id = $coach->school_id;
         $team->user_id= $coach->id;
         $team->save();
-       // return json_encode($team);
 
 
         return response()->json([
@@ -252,22 +243,21 @@ class AuthController extends Controller
             'gender' => 'required|string|max:10',
             'class' => 'required|string|max:50',
             'date_of_birth' => 'required', 
-            'image' => 'required', 
+            'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg', 
         ]);
         
-
         if ($validator->fails()) {
             return response()->json(array(
                 "status" => false,
                 "errors" => $validator->errors()
             ), 400);
         }
-        
+        // store image base64
          $path=public_path();
          $imageName =  Str::random(10).'.'.'png';
          $image = base64_encode(file_get_contents($request->file('image'))); 
-          
-         File::put($path. '/image/' .$imageName, base64_decode($image));
+        File::put($path. '/image/' .$imageName, base64_decode($image));
+
         $player = new player;
         $player->first_name = $request->first_name;
         $player->last_name = $request->last_name;
@@ -275,12 +265,9 @@ class AuthController extends Controller
         $player->class = $request->class;
         $player->age = $request->date_of_birth;
         $player->file =  $imageName;
-        //$player->file = $image;
         $player->school_id = $coach->school_id;
         $player->team_id = $team_id_string;
         $player->save();
-       // return json_encode($team);
-
 
         return response()->json([
             'status' => true,
@@ -318,7 +305,7 @@ class AuthController extends Controller
         $logged = User::find($user->id);
         $logged->school_id =$school->id;
         $logged->save();
-        //return($user);
+
         return response()->json([
             'status' => true,
             'message' => 'school successfully registered',
@@ -364,7 +351,6 @@ class AuthController extends Controller
     public function teamsInMatch(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            //'competition_id'=> 'required|numeric',
             'team_one_id' => 'required|numeric',
             'team_two_id' => 'required|numeric',
             'date'=> 'required',
@@ -380,7 +366,7 @@ class AuthController extends Controller
         }
        
         $game = new game;
-        $game->competition_id = 1;//$request->competition_id;
+        $game->competition_id = 1;
         $game->team_one_id = $request->team_one_id;
         $game->team_two_id = $request->team_two_id;
         $game->date = $request->date;
@@ -496,7 +482,6 @@ class AuthController extends Controller
         $user= auth()->user();
         $school_id = $user->school_id;
         $enroll = enroll_competition::where('school_id', $school_id)->pluck('competition_id');
-       // $competition = DB:: table('competitions')->get();
        $competition = competition::whereNotIn('id', $enroll)->get();
         return response()->json($competition);
         
@@ -538,31 +523,18 @@ class AuthController extends Controller
     {
         
         $pending = DB:: table('enroll_competitions')->get();
-        foreach($pending as $pen){
-           
-       $skl_id = $pen->school_id;
-       //$skl_name = school:: find($skl_id)->pluck('school_name')->values();
-       // $team = school :: find($skl_id)->teams->pluck('team_name')->values();
+        foreach($pending as $pen){    
+        $skl_id = $pen->school_id;
         $teams = team:: find($skl_id)->pluck('team_name','id')->values();
-      // $tee = $team->team_name;   
-      
+       
         }
        return response()->json($teams);    
-       //print($team_name);
 
 
     }
 
     public function show_games()
     {
-        //->join('teams','teams.id', '=','games.team_one_id')
-        // ->join('teams','teams.id','=','games.team_two_id')
-        //$game = game::select('*')->join('teams','teams.id', '=','games.team_one_id')
-                                  
-                                // ->get();
-        
-        //$game =  DB:: table('games')->teams->first();
-        //return response()->json($game);
         $games = DB:: table('games')->get();
         $team_one_obj = [];
         $team_one_obj1 = [];
@@ -572,34 +544,15 @@ class AuthController extends Controller
             $team_one = $game->team_one_id;
             $team_two = $game->team_two_id;
             $game_id[] = $game->id;
-           // $team_name1 = team::find(1)->get('team_name')->values();
-            //$team_one_obj[] = $team_name1;
            $team_name2 = team::select('id','team_name')->where('id', $team_two)->get();
            $team_one_obj[] = $team_name2;
            $team_name1 = team::select('id','team_name')->where('id', $team_one)->get();
            $team_one_obj1[] = $team_name1;
-            //print($team_name1);
-           // print($team_name2);
         }
          return response()->json(["team_one" => $team_one_obj,
                                 "team_two" => $team_one_obj1,
                                 "game_id" => $game_id]);
 
-
-        // $games = game ::all()->values();
-        // $i=0;
-        // foreach($games as $game){
-        //     $team_one = $game->team_one_id;
-        //     $team_two = $game->team_two_id;
-        //     $team_one_name = team::find($team_one)->team_name;
-        //     $team_two_name = team::find($team_two)->team_name;
-        //     $team_name1[$i] = $team_one_name;
-        //     $team_name2[$i] = $team_two_name;
-           
-        //     $i++;
-        // }
-        
-        // return response()->json([$team_name1,$team_name2]);
     }
     public function show_school_players()
     {
