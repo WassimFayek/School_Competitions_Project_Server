@@ -36,9 +36,7 @@ class VisitorsController extends Controller
     {   
        
         $last_result = DB::table('results')->latest()->first();
-        //foreach($last_result as $score1){$score = $score1['id'];}
         $score = $last_result->score;
-        //$games = game::with('results')->where('id',$last_result->game_id)->get();
         $teamwinnner = team::find($last_result->winner_team_id);
         $winnerName = $teamwinnner['team_name'];
         $teamtwo = game::where('id',$last_result->game_id)->get('team_two_id');
@@ -78,10 +76,8 @@ class VisitorsController extends Controller
 
     public function show_all_games()
     {
-        //$teamone =[];
         $game = game::all();
         foreach($game as $g ){
-           // $teamone[$g->id]= $g->team_name; 
             $teamone[$g->id]['id'] = $g->id;
             $teamone[$g->id]['team_one'] = team::find($g->team_one_id)->team_name;
             $teamone[$g->id]['team_two'] = team::find($g->team_two_id)->team_name;
