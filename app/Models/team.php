@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class team extends Model
 {
@@ -11,9 +10,8 @@ class team extends Model
 
     protected $fillable = [
         'team_name',
-        'description',
         'school_id',
-        
+        'description',
     ];
 
     public function schools()
@@ -33,7 +31,7 @@ class team extends Model
 
     public function games()
     {
-    return $this->belongsToMany(games::class,'games','team_one_id','team_two_id');
+         return $this->belongsToMany(games::class,'games','team_one_id','team_two_id');
     }
 
     public function users()
@@ -41,5 +39,4 @@ class team extends Model
         return $this->belongsTo(user::class);
     }
 
-  
 }

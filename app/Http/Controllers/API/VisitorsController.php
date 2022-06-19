@@ -1,34 +1,33 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use App\Models\team;
+use App\Models\game;
+use App\Models\result;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\result;
-use App\Models\game;
-use App\Models\team;
-use Carbon\Carbon;
+use App\Http\Controllers\Controller;
+
 class VisitorsController extends Controller
 {
-    
     public function show_players()
     {
         $player = DB:: table('players')->get();
         return response()->json($player);
-        
     }
 
     public function show_teams()
     {
         $team = DB:: table('teams')->get();
-        return response()->json($team);
-        
+
+        return response()->json($team);   
     }
 
     public function show_popular_players()
     {
         $popular_player = DB:: table('players')->limit(3)->get();
+
         return response()->json($popular_player);
         
     }
@@ -67,6 +66,7 @@ class VisitorsController extends Controller
        $team_one_name = $team_one['team_name'];
        $team_two = team::find($game->team_two_id);
        $team_two_name = $team_two['team_name'];
+
        return response()->json([
            "team_one" => $team_one_name,
            "team_two" => $team_two_name,
@@ -84,7 +84,7 @@ class VisitorsController extends Controller
             $teamone[$g->id]['date'] = game::find($g->id)->date;
             $teamone[$g->id]['time'] = game::find($g->id)->time;
         }
-        return response()->json([$teamone]);
 
+        return response()->json([$teamone]);
     }
 }

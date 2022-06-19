@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class competition extends Model
 {
@@ -11,10 +10,9 @@ class competition extends Model
 
     protected $fillable = [
         'name',
-        'description',
-        'start_day',
         'end_day',
-     
+        'start_day',
+        'description',
     ];
 
     public function schools()

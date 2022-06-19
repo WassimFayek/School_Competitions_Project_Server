@@ -1,18 +1,17 @@
 <?php
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class school extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'school_name',
-        'school_address',
         'school_phone',
-       
+        'school_address',
     ];
 
 public function players()
@@ -34,4 +33,5 @@ public function competitions()
 {
     return $this->hasMany(competition::class);
 }
+
 }

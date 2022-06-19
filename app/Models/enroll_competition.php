@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class enroll_competition extends Model
 {
@@ -11,7 +10,6 @@ class enroll_competition extends Model
 
     protected $fillable = [
         'school_id',
-        'competition_id',
-       
+        'competition_id',  
     ];
 }
